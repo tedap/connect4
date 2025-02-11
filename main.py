@@ -4,10 +4,11 @@ import re
 redEscape = "\33[31m"
 yellowEscape = "\033[33m"
 whiteEscape = "\033[0m"
+greyEscape = "\033[38;5;245m"
 
 possibleColumns = ["A","B","C","D","E","F","G"]
 gameBoard = [[" " for i in range(7)] for j in range(6)]
-div = "\n  +---+---+---+---+---+---+---+"
+div = greyEscape + "\n  +---+---+---+---+---+---+---+" + whiteEscape
 
 player = ""
 computer = ""
@@ -16,12 +17,12 @@ turn = "r"
 victor = None
 
 def printGameBoard():
-    print("\n    A   B   C   D   E   F   G  ", end="")
+    print(whiteEscape + "\n    A   B   C   D   E   F   G  " + whiteEscape, end="")
     for i in range(6):
         print(div)
-        print(i, "|", end="")
+        print(greyEscape + "  |" + whiteEscape, end="")
         for j in range(7):
-            print(" " + gameBoard[i][j] + " |", end="")
+            print(" " + gameBoard[i][j] + greyEscape + " |" + whiteEscape, end="")
     print(div)
     print("\n")
 
@@ -40,12 +41,12 @@ def selectTeams():
         if re.match(yPattern, playerInput, re.IGNORECASE):
             player = "y"
             computer = "r"
-            print("Team YELLOW selected")
+            print("Team" + yellowEscape + "YELLOW" + whiteEscape + " selected")
             break
         elif re.match(rPattern, playerInput, re.IGNORECASE):
             player = "r"
             computer = "y"
-            print("Team RED selected")
+            print("Team " + redEscape + "RED" + whiteEscape + " selected")
             break
         else:
             print("Hmmm... I don't think that team exists")
