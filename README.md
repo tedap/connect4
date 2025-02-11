@@ -1,2 +1,4 @@
 # connect4
-Connect 4 game
+Simple Connect Four game against a randomised Computer
+
+`python main.py`
