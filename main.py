@@ -13,6 +13,8 @@ player = ""
 computer = ""
 turn = "r"
 
+victor = None
+
 def printGameBoard():
     print("\n    A   B   C   D   E   F   G  ", end="")
     for i in range(6):
@@ -24,7 +26,7 @@ def printGameBoard():
     print("\n")
 
 def selectTeams():
-    print("\nWould you like to be RED or YELLOW? Note: RED starts")
+    print("\nWould you like to be " + redEscape + "RED" + whiteEscape + " or " + yellowEscape + "YELLOW" + whiteEscape + "? Note: " + redEscape + "RED " + whiteEscape + "starts")
     
     yPattern = "^(y|yellow)$"
     rPattern = "^(r|red)$"
@@ -84,31 +86,83 @@ def makePlay(column, team, options):
 
 
 def conclusionTest(column, options):
-    
-    #got to here (indexing problems)
-
-    row = options[column]+4
-    lastPlay = gameBoard[row][column]
-    print(lastPlay)
-
     columnBound = 6
     rowBound = 5
 
-    return False
+    row = 5-options[column]
+    lastPlay = gameBoard[row][column]
+
+    #print(lastPlay)
+    lengths = [0, 0, 0, 0]
+    
+    #check vertical
+    for i in range(0, 4):
+        tmpRow = row + i
+        if tmpRow <= rowBound:
+            if lastPlay == gameBoard[tmpRow][column]:
+                lengths[0] += 1
+            else:
+                lengths[0] = 0
+        if lengths[0] == 4:
+            #print("vertical")
+            return False
+
+    #check horizontal
+    for j in range(-3, 4):
+        tmpColumn = column + j
+        if (tmpColumn <= columnBound) and (tmpColumn >= 0):
+            if lastPlay == gameBoard[row][tmpColumn]:
+                lengths[1] += 1
+            else:
+                lengths[1] = 0
+        if lengths[1] == 4:
+            #print("horizontal")
+            return False
+    
+    #check positive diagonal
+    for i, j in zip(range(-3, 4), range(3, -4, -1)):
+        tmpRow = row + i
+        tmpColumn = column + j
+        if(tmpColumn <= columnBound) and (tmpColumn >= 0) and (tmpRow <= rowBound) and (tmpRow >= 0):
+            if lastPlay == gameBoard[tmpRow][tmpColumn]:
+                lengths[2] += 1
+            else:
+                lengths[2] = 0
+        if lengths[2] == 4:
+            #print("pos diag")
+            return False
+
+    #check negative diagonal
+    for i, j in zip(range(-3, 4), range(-3, 4)):
+        tmpRow = row + i
+        tmpColumn = column + j
+        if(tmpColumn <= columnBound) and (tmpColumn >= 0) and (tmpRow <= rowBound) and (tmpRow >= 0):
+            if lastPlay == gameBoard[tmpRow][tmpColumn]:
+                lengths[3] += 1
+            else:
+                lengths[3] = 0
+        if lengths[3] == 4:
+            #print("neg diag")
+            return False
+
+    return True
 
 def main():
     global turn
     global player
     global computer
 
+    notEnded = True
     lastPlay = -1
     options = getTurnOptions()
 
     selectTeams()
     print("\nCan you outsmart the Computer... let's find out!")
 
-    while conclusionTest(lastPlay, options) == False:
-        
+
+    while notEnded:
+        options = getTurnOptions()  
+
         if all(x == -1 for x in options):
             print("It's a Draw!!!\n")
             break
@@ -139,10 +193,22 @@ def main():
             lastPlay = playerPlay
             turn = computer
         
-        options = getTurnOptions()  
-        
-    
-    print("Game concluded.")
+        notEnded = conclusionTest(lastPlay, options)
+
+    printGameBoard()
+
+    if notEnded == False:
+        if turn == computer:
+            if player == "r":
+                print(redEscape + "Red Team Wins. Congratulations!" + whiteEscape)
+            else:
+                print(yellowEscape + "Yellow Team Wins. Congratulations!" + whiteEscape)    
+        else:
+            if computer == "r":
+                print(redEscape + "Red Team Wins. Unlucky :(" + whiteEscape)
+            else:
+                print(yellowEscape + "Yellow Team Wins. Unlucky :(" + whiteEscape)                
+
 
 if __name__ == "__main__":
     main()
